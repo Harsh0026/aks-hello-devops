@@ -20,6 +20,9 @@ ingress:
   tls:
     enabled: false
 
+env:
+  APP_ENV: ""
+
 resources:
   requests:
     cpu: 100m
@@ -27,4 +30,3 @@ resources:
   limits:
     cpu: 250m
     memory: 256Mi
-
