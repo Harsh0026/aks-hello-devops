@@ -1,0 +1,44 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
+
+# Helm
+charts/
+*.tgz
+
+# Docker
+**/.dockerignore
+
+# Node/Python/General (adjust if needed)
+node_modules/
+__pycache__
+
+@Harsh0026 ➜ /workspaces/aks-hello-devops (main) $ cat .gitignore
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
+
+# Helm
+charts/
+*.tgz
+
+# Docker
+**/.dockerignore
+
+# Node/Python/General (adjust if needed)
+node_modules/
+__pycache__//

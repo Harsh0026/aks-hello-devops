@@ -1,0 +1,51 @@
+name: CI-CD-AKS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: hello-app
+  AKS_RESOURCE_GROUP: rg-aks-hello-devops
+  AKS_CLUSTER_NAME: aks-hello-devops
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+    - name: Login to ACR
+      run: |
+        az acr login --name ${{ secrets.ACR_LOGIN_SERVER }}
+
+    - name: Build Docker Image
+      run: |
+        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+    - name: Push Docker Image
+      run: |
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+    - name: Set AKS Context
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: ${{ env.AKS_RESOURCE_GROUP }}
+        cluster-name: ${{ env.AKS_CLUSTER_NAME }}
+
+    - name: Deploy using Helm
+      run: |
+        helm upgrade --install hello-app ./helm/hello-app \
+          --set image.repository=${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }} \
+          --set image.tag=${{ github.sha }}
